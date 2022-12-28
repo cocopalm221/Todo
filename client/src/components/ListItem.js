@@ -10,7 +10,7 @@ const ListItem = React.memo(({ item, todoData, setTodoData, deleteClick }) => {
 
   //제목을 출력하고 변경하는 State
   //편집창에는 타이틀이 먼저 작성되어 있어야 한다.
-  const [deitedTitle, setEditedTitle] = useState(item.title);
+  const [editedTitle, setEditedTitle] = useState(item.title);
 
   // const deleteClick = (id) => {
   //   // 클릭된 ID 와 다른 요소들만 걸러서 새로운 배열 생성
@@ -19,7 +19,7 @@ const ListItem = React.memo(({ item, todoData, setTodoData, deleteClick }) => {
   //   setTodoData(nowTodo);
   // };
 
-  const deitChange = (event) => {
+  const editChange = (event) => {
     setEditedTitle(event.target.value);
   };
 
@@ -38,21 +38,34 @@ const ListItem = React.memo(({ item, todoData, setTodoData, deleteClick }) => {
     });
     setTodoData(updateTodo);
     // console.log(this.state.todoData);
+    //로컬에 저장한다.(DB 예정)
+    localStorage.setItem("todoData", JSON.stringify(updateTodo));
   };
 
   //현재 item.id에 해당하는 것만 업데이트한다.
   const todoId = item.id;
   const updateTitle = () => {
+    // 공백 문자열 제거 추가
+    let str = editedTitle;
+    str = str.replace(/^\s+|\s+$/gm, "");
+    if (str.length === 0) {
+      alert("제목을 입력하세요.");
+      setEditedTitle(item.title);
+      return;
+    }
+
     let tempTodo = todoData.map((item) => {
       //모든 todoData 중에 현재 id와 같다면
       if (item.id === todoId) {
         //title 수정
-        item.title = deitedTitle;
+        item.title = editedTitle;
       }
       return item;
     });
     //데이터 갱신
     setTodoData(tempTodo);
+    //로컬에 저장한다.(DB 예정)
+    localStorage.setItem("todoData", JSON.stringify(tempTodo));
     //목록 창으로 이동
     setIsEditing(false);
   };
@@ -65,8 +78,8 @@ const ListItem = React.memo(({ item, todoData, setTodoData, deleteClick }) => {
           <input
             type="text"
             className="w-full px-3 py-2 mr-4 text-gray-500 bg-gray-100 border rounded"
-            value={deitedTitle}
-            onChange={deitChange}
+            value={editedTitle}
+            onChange={editChange}
           />
         </div>
         <div className="items-center ">
