@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import Form from "./components/Form";
 import List from "./components/List";
 
@@ -19,13 +19,24 @@ useEffect() Life-cycle 체크가능
 */
 
 export default function App() {
+  // console.log("APP Rendering...");
   const [todoData, setTodoData] = useState([
     { id: 1, title: "할일 1", completed: false },
-    { id: 2, title: "할일 2", completed: false },
+    { id: 2, title: "할일 2", completed: true },
     { id: 3, title: "할일 3", completed: false },
     { id: 4, title: "할일 4", completed: false },
   ]);
   const [todoValue, setTodoValue] = useState("");
+
+  const deleteClick = useCallback(
+    (id) => {
+      // 클릭된 ID 와 다른 요소들만 걸러서 새로운 배열 생성
+      const nowTodo = todoData.filter((item) => item.id !== id);
+      // console.log("클릭", nowTodo);
+      setTodoData(nowTodo);
+    },
+    [todoData]
+  );
 
   const addTodoSubmit = (event) => {
     //웹브라우저 새로 고침을 하면 안되므로 막아줌.
@@ -47,13 +58,22 @@ export default function App() {
     setTodoValue("");
   };
 
+  const deleteAllClink = () => {
+    setTodoData([]);
+  };
+
   return (
     <div className="flex items-center justify-center w-screen h-screen bg-blue-300">
       <div className="w-full p-6 m-4 bg-white rounded shadow lg:w-3/4 lg:max-w-5xl">
         <div className="flex justify-between">
-          <h1>할일 목록</h1>
+          <h1>To Do List</h1>
+          <button onClick={deleteAllClink}>Delete ALL</button>
         </div>
-        <List todoData={todoData} setTodoData={setTodoData} />
+        <List
+          todoData={todoData}
+          setTodoData={setTodoData}
+          deleteClick={deleteClick}
+        />
         <Form
           todoValue={todoValue}
           setTodoValue={setTodoValue}
